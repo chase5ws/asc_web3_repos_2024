@@ -11,19 +11,20 @@ import "@openzeppelin/contracts@5.0.2/access/Ownable.sol";
 contract AscCatSamurai is ERC721, ERC721Enumerable, ERC721Pausable, Ownable {
     uint256 private _nextTokenId;
     string private _baseTokenURI;
-    uint256 maxSupply = 350;
+    //最大供應數量
+    uint256 maxSupply = 500;
     bool public publicMintOpen = false;
     bool public allowListMintOpen = false;
     mapping(address => bool) public allowList;
     address[] public allowListAddresses; // This array will keep track of the addresses
 
 
-
+    //設定擁有者
     constructor(address initialOwner)
         ERC721("asc cat samurai", "acs")
         Ownable(initialOwner)
     {}
-
+    //設定ipfs位置
     function _baseURI() internal view override returns (string memory) {
         return _baseTokenURI;
     }
@@ -33,7 +34,7 @@ contract AscCatSamurai is ERC721, ERC721Enumerable, ERC721Pausable, Ownable {
         _baseTokenURI = newBaseURI;
     }
 
-
+    //暫停合約
     function pause() public onlyOwner {
         _pause();
     }
@@ -42,7 +43,7 @@ contract AscCatSamurai is ERC721, ERC721Enumerable, ERC721Pausable, Ownable {
         _unpause();
     }
 
-    // Modify the mint windows
+    // Modify the mint windows 管理mint方式
     function editMintWindows(
         bool _publicMintOpen,
         bool _allowListMintOpen
@@ -51,7 +52,7 @@ contract AscCatSamurai is ERC721, ERC721Enumerable, ERC721Pausable, Ownable {
         allowListMintOpen = _allowListMintOpen;
     }
 
-    // Populate the Allow List
+    // Populate the Allow List 上傳白名單功能
     function setAllowList(address[] calldata addresses) external onlyOwner {
         for(uint256 i = 0; i < addresses.length; i++){
             if (!allowList[addresses[i]]) { // Check if the address is not already in the allowList
@@ -61,6 +62,7 @@ contract AscCatSamurai is ERC721, ERC721Enumerable, ERC721Pausable, Ownable {
         }
     }
 
+    //白名單mint
     // require only the allowList people to mint
     // Add publicMint and allowListMintOpen Variables
     function allowListMint() public payable {
@@ -79,6 +81,7 @@ contract AscCatSamurai is ERC721, ERC721Enumerable, ERC721Pausable, Ownable {
         require(msg.value == 20 ether, "You are not on the allow list");
     }
 
+    //初始化mint方式
     function internalMint() internal {
         require(totalSupply() < maxSupply, "We Sold Out!");
         uint256 tokenId = _nextTokenId++;
@@ -110,7 +113,7 @@ contract AscCatSamurai is ERC721, ERC721Enumerable, ERC721Pausable, Ownable {
     {
         return super.supportsInterface(interfaceId);
     }
-
+    //合約收益抽出
     function withdraw() public payable onlyOwner 
     {
     //withdraw money
