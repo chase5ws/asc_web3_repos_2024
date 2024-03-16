@@ -76,7 +76,7 @@ contract AscCatSamurai is ERC721, ERC721Enumerable, ERC721Pausable, Ownable {
     // Add limiting of supply
     function publicMint() public payable {
         require(publicMintOpen, "Public Mint Closed");
-        require(msg.value == 10 ether, "You are not on the allow list");
+        require(msg.value == 20 ether, "You are not on the allow list");
     }
 
     function internalMint() internal {
@@ -109,5 +109,12 @@ contract AscCatSamurai is ERC721, ERC721Enumerable, ERC721Pausable, Ownable {
         returns (bool)
     {
         return super.supportsInterface(interfaceId);
+    }
+
+    function withdraw() public payable onlyOwner 
+    {
+    //withdraw money
+    (bool os, ) = payable(owner()).call{value: address(this).balance}("");
+    require(os);
     }
 }
